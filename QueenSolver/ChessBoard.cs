@@ -76,8 +76,6 @@ namespace QueenSolver
             int originCol = queenLocations[0][1];
             int originRow = queenLocations[0][0];
             RemoveQueen(originCol, originRow);
-            //int branchingFactor = 9;
-            //int successorCount = 0;
 
             for (int col = 0; col < size; col++)
             {
@@ -86,7 +84,6 @@ namespace QueenSolver
                     ChessBoard newBoard = this.Clone();
                     newBoard.PlaceQueen(col, originRow);
                     successors.Add(newBoard);
-                    //successorCount++;
                 }
             }
             PlaceQueen(originCol, originRow);
@@ -153,19 +150,6 @@ namespace QueenSolver
             }
         }
 
-        /*public ChessBoard getSolutionHistory()
-        {
-            ChessBoard iterator = this;
-            ChessBoard directAncestor = null;
-            int 
-            while (iterator.ancestor != null)
-            {
-                iterator.ancestor.child = iterator;
-                iterator = iterator.ancestor;
-                directAncestor = iterator;
-            }
-            return directAncestor;
-        }*/
         public (ChessBoard father, int nodeCount) getSolutionHistory()
         {
             ChessBoard iterator = this;
