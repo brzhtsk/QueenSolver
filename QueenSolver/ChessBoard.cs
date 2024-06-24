@@ -162,6 +162,10 @@ namespace QueenSolver
                 directAncestor = iterator;
                 nodeCount++;
             }
+            if (directAncestor == null)
+            {
+                directAncestor = iterator;
+            }
             return (directAncestor, nodeCount);
         }
     }

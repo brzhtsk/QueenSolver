@@ -16,3 +16,4 @@ C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Release\net6.0-windows
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Release\net6.0-windows\QueenSolver.pdb
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Release\net6.0-windows\QueenSolver.genruntimeconfig.cache
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Release\net6.0-windows\ref\QueenSolver.dll
+C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Release\net6.0-windows\QueenSolver.sourcelink.json

@@ -1059,7 +1059,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.LightGray;
+            BackColor = Color.Gainsboro;
             ClientSize = new Size(732, 503);
             Controls.Add(nodeCountLabel);
             Controls.Add(practicalComplexityLabel);

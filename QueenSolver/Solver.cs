@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +11,27 @@ namespace QueenSolver
     {
         private ChessBoard initialBoard;
         private int nodeCount;
+        private const long MemoryLimit = 500 * 1024 * 1024;
+        private const int MemoryCheckInterval = 1000;
 
         public Solver(ChessBoard board)
         {
             initialBoard = board;
             nodeCount = 0;
+        }
+
+        private bool IsMemoryLimitExceeded()
+        {
+            Process currentProcess = Process.GetCurrentProcess();
+            long memoryUsage = currentProcess.PrivateMemorySize64;
+            return memoryUsage > MemoryLimit;
+        }
+
+        public void ResetMemory()
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
 
         public (ChessBoard solution, int nodeCount) SolveBFS()
@@ -25,6 +42,11 @@ namespace QueenSolver
 
             while (queue.Count > 0)
             {
+                if (nodeCount % MemoryCheckInterval == 0 && IsMemoryLimitExceeded())
+                {
+                    return (null, nodeCount);
+                }
+
                 var currentBoard = queue.Dequeue();
 
                 if (currentBoard.IsGoal())

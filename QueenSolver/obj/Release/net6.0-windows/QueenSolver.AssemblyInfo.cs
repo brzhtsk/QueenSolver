@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QueenSolver")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f2f9953b121b8213923fd4a76d6bf77d481e1be7")]
 [assembly: System.Reflection.AssemblyProductAttribute("QueenSolver")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QueenSolver")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

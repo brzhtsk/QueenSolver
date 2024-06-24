@@ -21,6 +21,7 @@ namespace QueenSolver
         private int queenCount = 0;
         private int totalNodeCount = 0;
         private int currentNodeCount = 1;
+        private bool isBoardLocked = false;
         public MainForm()
         {
             InitializeComponent();
@@ -59,8 +60,20 @@ namespace QueenSolver
             button.ForeColor = isEnabled ? Color.Black : Color.Gray;
         }
 
+        private void ChosenButtonState(Button button)
+        {
+            button.Enabled = false;
+            button.BackColor = Color.Silver;
+            button.ForeColor = Color.Black;
+        }
+
         private void PictureBox_Click(object sender, EventArgs e)
         {
+            if (isBoardLocked)
+            {
+                MessageBox.Show("Для нового рішення почніть спочатку");
+                return;
+            }
             PictureBox pictureBox = sender as PictureBox;
             int col = pictureBox.Location.Y / pictureBox.Height;
             int row = pictureBox.Location.X / pictureBox.Width;
@@ -173,16 +186,19 @@ namespace QueenSolver
             var (solution, nodeCount) = solveMethod();
             if (solution != null)
             {
+                isBoardLocked = true;
                 currentState = solution;
                 greatAncestor = null;
                 DisplaySolution(solution);
                 practicalComplexityLabel.Text = $"Практична складність: {nodeCount}";
                 SetButtonState(fileWritingButton, true);
                 SetButtonState(stepByStepViewingButton, true);
+                solver.ResetMemory();
             }
             else
             {
-                MessageBox.Show("Рішення не знайдено.");
+                solver.ResetMemory();
+                MessageBox.Show("Рішення не знайдено");
                 practicalComplexityLabel.Text = "Практична складність: -";
             }
             SetButtonState(initialGenerationButton, false);
@@ -190,6 +206,7 @@ namespace QueenSolver
 
         private void bfsSolverButton_Click(object sender, EventArgs e)
         {
+            ChosenButtonState(bfsSolverButton);
             SetButtonState(ldfsSolverButton, false);
             SetButtonState(idsSolverButton, false);
             SolveAndDisplay(() => solver.SolveBFS());
@@ -197,6 +214,7 @@ namespace QueenSolver
 
         private void ldfsSolverButton_Click(object sender, EventArgs e)
         {
+            ChosenButtonState(ldfsSolverButton);
             SetButtonState(bfsSolverButton, false);
             SetButtonState(idsSolverButton, false);
             int depthLimit = 10;
@@ -205,6 +223,7 @@ namespace QueenSolver
 
         private void idsSolverButton_Click(object sender, EventArgs e)
         {
+            ChosenButtonState(idsSolverButton);
             SetButtonState(ldfsSolverButton, false);
             SetButtonState(bfsSolverButton, false);
             SolveAndDisplay(() => solver.SolveIDS());
@@ -230,14 +249,20 @@ namespace QueenSolver
         {
             if (currentState != null)
             {
-                //greatAncestor = currentState.getSolutionHistory();
                 var (father, nodeCount) = currentState.getSolutionHistory();
                 greatAncestor = father;
-                SaveSolutionToFile(greatAncestor);
+
+                if (!BoardsAreEqual(initialBoard, greatAncestor) && initialBoard.child == null && greatAncestor.ancestor != initialBoard)
+                {
+                    initialBoard.child = greatAncestor;
+                    greatAncestor.ancestor = initialBoard;
+                }
+                SaveSolutionToFile(initialBoard);
             }
             else
             {
                 MessageBox.Show("Немає рішення для збереження");
+                SetButtonState(fileWritingButton, false);
             }
         }
 
@@ -282,20 +307,26 @@ namespace QueenSolver
 
         private void stepByStepViewingButton_Click(object sender, EventArgs e)
         {
-            //greatAncestor = currentState.getSolutionHistory();
-            var (father, nodeCount) = currentState.getSolutionHistory();
-            greatAncestor = father;
-            totalNodeCount = nodeCount;
-            //if (greatAncestor == null) return;
-            //DisplaySolution(greatAncestor);
-            //currentState = greatAncestor;
-
-            if (greatAncestor != null)
+            if (currentState != null)
             {
-                DisplaySolution(greatAncestor);
-                currentState = greatAncestor;
+                var (father, nodeCount) = currentState.getSolutionHistory();
+                greatAncestor = father;
+                totalNodeCount = nodeCount + 1;
+
+                if (!BoardsAreEqual(initialBoard, greatAncestor) && initialBoard.child == null && greatAncestor.ancestor != initialBoard)
+                {
+                    initialBoard.child = greatAncestor;
+                    greatAncestor.ancestor = initialBoard;
+                }
+                DisplaySolution(initialBoard);
+                currentState = initialBoard;
+
+                if (BoardsAreEqual(initialBoard, greatAncestor)) { totalNodeCount -= 1; }
                 nodeCountLabel.Text = $"{currentNodeCount} з {totalNodeCount}";
-                SetButtonState(viewNextButton, true);
+                if (greatAncestor.child != null)
+                {
+                    SetButtonState(viewNextButton, true);
+                }
             }
             else
             {
@@ -303,28 +334,27 @@ namespace QueenSolver
                 SetButtonState(viewNextButton, false);
             }
 
-            //nodeCountLabel.Text = $"{currentNodeCount} з {totalNodeCount}";
             SetButtonState(stepByStepViewingButton, false);
             SetButtonState(viewPreviousButton, false);
-            //SetButtonState(viewNextButton, true);
+            ChosenButtonState(stepByStepViewingButton);
         }
 
         private void viewPreviousButton_Click(object sender, EventArgs e)
         {
-            //if (greatAncestor == null || currentState.ancestor == null) return;
-            //if (greatAncestor == null) return;
-            if (greatAncestor != null)
+            if (currentState != null)
             {
-                DisplaySolution(currentState.ancestor);
-                currentState = currentState.ancestor;
-                currentNodeCount -= 1;
-
-                nodeCountLabel.Text = $"{currentNodeCount} з {totalNodeCount}";
-                SetButtonState(viewNextButton, true);
                 if (currentState.ancestor == null)
                 {
                     SetButtonState(viewPreviousButton, false);
+                    return;
                 }
+                DisplaySolution(currentState.ancestor);
+                currentState = currentState.ancestor;
+                currentNodeCount -= 1;
+                if (currentState.ancestor == null)
+                    SetButtonState(viewPreviousButton, false);
+                nodeCountLabel.Text = $"{currentNodeCount} з {totalNodeCount}";
+                SetButtonState(viewNextButton, true);
             }
             else
             {
@@ -334,20 +364,20 @@ namespace QueenSolver
 
         private void viewNextButton_Click(object sender, EventArgs e)
         {
-            //if (greatAncestor == null || currentState.child == null) return;
-            //if (greatAncestor == null) return;
-            if (greatAncestor != null)
+            if (currentState != null)
             {
-                DisplaySolution(currentState.child);
-                currentState = currentState.child;
-                currentNodeCount += 1;
-
-                nodeCountLabel.Text = $"{currentNodeCount} з {totalNodeCount}";
-                SetButtonState(viewPreviousButton, true);
                 if (currentState.child == null)
                 {
                     SetButtonState(viewNextButton, false);
+                    return;
                 }
+                DisplaySolution(currentState.child);
+                currentState = currentState.child;
+                currentNodeCount += 1;
+                if (currentState.child == null)
+                    SetButtonState(viewNextButton, false);
+                nodeCountLabel.Text = $"{currentNodeCount} з {totalNodeCount}";
+                SetButtonState(viewPreviousButton, true);
             }
             else
             {
@@ -362,6 +392,7 @@ namespace QueenSolver
             greatAncestor = null;
             queenCount = 0;
             currentNodeCount = 1;
+            isBoardLocked = false;
             practicalComplexityLabel.Text = "Практична складність: ";
             nodeCountLabel.Text = " ";
             ButtonsInitialAvailability();
@@ -372,6 +403,19 @@ namespace QueenSolver
                     chessBoard[i, j].Image = null;
                 }
             }
+        }
+
+        private bool BoardsAreEqual(ChessBoard board1, ChessBoard board2)
+        {
+            if (board1.QueenLocations.Count != board2.QueenLocations.Count)
+                return false;
+
+            for (int i = 0; i < board1.QueenLocations.Count; i++)
+            {
+                if (board1.QueenLocations[i][0] != board2.QueenLocations[i][0] || board1.QueenLocations[i][1] != board2.QueenLocations[i][1])
+                    return false;
+            }
+            return true;
         }
     }
 }

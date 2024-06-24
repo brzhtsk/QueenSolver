@@ -11,6 +11,7 @@ C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\Q
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\QueenSolver.AssemblyInfoInputs.cache
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\QueenSolver.AssemblyInfo.cs
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\QueenSolver.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\QueenSolver.sourcelink.json
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\QueenSolver.dll
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\refint\QueenSolver.dll
 C:\Users\User\source\repos\QueenSolverApp\QueenSolver\obj\Debug\net6.0-windows\QueenSolver.pdb
